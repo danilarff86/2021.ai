@@ -25,8 +25,7 @@ func (ee *ExpressionEvaluator) Evaluate() (*set.IntegerSet, error) {
 }
 
 func (ee *ExpressionEvaluator) operationLevel() (*set.IntegerSet, error) {
-	res := set.CreateIntegerSet()
-	var op set.IntegerSetOperationFunc
+	var operation set.IntegerSetOperationFunc
 
 	if ee.index >= len(ee.tokens) {
 		return nil, errors.New("Invalid expression")
@@ -34,47 +33,47 @@ func (ee *ExpressionEvaluator) operationLevel() (*set.IntegerSet, error) {
 
 	switch t := ee.tokens[ee.index]; t {
 	case "SUM":
-		op = res.Sum
+		operation = set.Sum
 	case "DIF":
-		op = res.Difference
+		operation = set.Difference
 	case "INT":
-		op = res.Intersection
+		operation = set.Intersection
 	default:
 		return nil, errors.New("Invalid expression")
 	}
 
 	ee.index++
 
-	return res, ee.performOperation(op, res)
+	return ee.performOperation(operation)
 }
 
-func (ee *ExpressionEvaluator) performOperation(op set.IntegerSetOperationFunc, res *set.IntegerSet) error {
+func (ee *ExpressionEvaluator) performOperation(operation set.IntegerSetOperationFunc) (*set.IntegerSet, error) {
 	var arg *set.IntegerSet
+	var res *set.IntegerSet
 	var err error
-	firstArg := true
 	for ee.index < len(ee.tokens) {
 		t := ee.tokens[ee.index]
 		ee.index++
 
-		if t == "[" {
+		switch t {
+		case "[":
 			arg, err = ee.operationLevel()
-		} else if t == "]" {
-			break
-		} else {
+		case "]":
+			return res, nil
+		default:
 			arg, err = loader.ReadIntegerSetFromFile(t)
 		}
 
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		if firstArg {
-			res.Sum(arg)
-			firstArg = false
+		if res == nil {
+			res = arg
 		} else {
-			op(arg)
+			operation(res, arg)
 		}
 	}
 
-	return nil
+	return res, nil
 }
