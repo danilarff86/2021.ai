@@ -5,11 +5,12 @@ import (
 	"os"
 
 	"2021.ai/calc"
+	"2021.ai/loader"
 )
 
 func main() {
 	argsWithoutProg := os.Args[1:]
-	c := calc.CreateExpressionEvaluator(argsWithoutProg)
+	c := calc.CreateExpressionEvaluator(&loader.IntegerSetLoaderFromFile{}, argsWithoutProg)
 	res, err := c.Evaluate()
 
 	if err != nil {

@@ -8,7 +8,14 @@ import (
 	"strconv"
 )
 
-func ReadIntegerSetFromFile(filename string) (*set.IntegerSet, error) {
+type IntegerSetLoader interface {
+	ReadIntegerSetFromFile(filename string) (*set.IntegerSet, error)
+}
+
+type IntegerSetLoaderFromFile struct {
+}
+
+func (*IntegerSetLoaderFromFile) ReadIntegerSetFromFile(filename string) (*set.IntegerSet, error) {
 	readFile, err := os.Open(filename)
 
 	if err != nil {

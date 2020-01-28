@@ -8,12 +8,13 @@ import (
 )
 
 type ExpressionEvaluator struct {
-	tokens []string
-	index  int
+	setLoader loader.IntegerSetLoader
+	tokens    []string
+	index     int
 }
 
-func CreateExpressionEvaluator(tokens []string) *ExpressionEvaluator {
-	return &ExpressionEvaluator{tokens: tokens, index: 0}
+func CreateExpressionEvaluator(setLoader loader.IntegerSetLoader, tokens []string) *ExpressionEvaluator {
+	return &ExpressionEvaluator{setLoader: setLoader, tokens: tokens, index: 0}
 }
 
 func (ee *ExpressionEvaluator) Evaluate() (*set.IntegerSet, error) {
@@ -61,7 +62,7 @@ func (ee *ExpressionEvaluator) performOperation(operation set.IntegerSetOperatio
 		case "]":
 			return res, nil
 		default:
-			arg, err = loader.ReadIntegerSetFromFile(t)
+			arg, err = ee.setLoader.ReadIntegerSetFromFile(t)
 		}
 
 		if err != nil {

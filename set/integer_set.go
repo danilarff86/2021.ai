@@ -18,6 +18,14 @@ func CreateIntegerSet() *IntegerSet {
 	return &IntegerSet{data: make(map[int]void)}
 }
 
+func CreateIntegerSetFromSlice(arr []int) *IntegerSet {
+	s := &IntegerSet{data: make(map[int]void)}
+	for _, v := range arr {
+		s.data[v] = member
+	}
+	return s
+}
+
 func (s *IntegerSet) AddElement(v int) {
 	s.data[v] = member
 }
